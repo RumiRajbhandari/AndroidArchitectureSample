@@ -1,21 +1,25 @@
 package com.rumi.architecturesample.repository
 
+import androidx.lifecycle.LiveData
 import com.rumi.architecturesample.Photo
-import com.rumi.architecturesample.data.dao.PhotoDao
 import com.rumi.architecturesample.data.model.PhotoEntity
 
-class PhotoRepositoryImpl  (val photoDao: PhotoDao): PhotoRepository {
+class PhotoRepositoryImpl(val local: PhotoRepository.Local, val remote: PhotoRepository.Remote) :
+    PhotoRepository.Local, PhotoRepository.Remote {
 
     override suspend fun insertPhoto(photo: Photo) {
-        photoDao.insertPhoto(mapToPhotoEntity(photo))
+        local.insertPhoto(photo)
     }
 
-    override fun insertPhotos(photos: List<Photo>) {
-        val photoEntityList = photos.map { mapToPhotoEntity(it) }
-        photoDao.insertPhotos(photoEntityList)
+    override suspend fun insertPhotos(photos: List<Photo>) {
+        local.insertPhotos(photos)
     }
 
-    fun mapToPhotoEntity(photo: Photo): PhotoEntity{
-        return PhotoEntity(photo.id, photo.title)
+    override suspend fun fetchPhotos(): List<Photo> {
+        return remote.fetchPhotos()
+    }
+
+    override suspend fun fetchPhoto(id: Int): LiveData<PhotoEntity> {
+        return local.fetchPhoto(id)
     }
 }

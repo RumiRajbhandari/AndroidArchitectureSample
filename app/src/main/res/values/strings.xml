@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ArchitectureSample</string>
+    <string name="fetch_title">Fetch Title</string>
 </resources>
